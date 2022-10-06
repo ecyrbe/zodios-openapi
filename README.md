@@ -92,7 +92,7 @@ import { userRouter } from './userRouter';
 const app = zodiosApp();
 
 // expose user api endpoints
-app.user('/api/v1', userRouter);
+app.use('/api/v1', userRouter);
 
 // expose openapi documentation
 const document = toOpenApi(userApi, {
