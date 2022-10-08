@@ -1,14 +1,33 @@
-import { makeApi } from "@zodios/core";
-import { zodiosApp } from "@zodios/express";
+import { makeApi, makeErrors } from "@zodios/core";
+import { zodiosApp, zodiosRouter } from "@zodios/express";
 import { serve, setup } from "swagger-ui-express";
 import { z } from "zod";
 import { toOpenApi } from "../src";
 
-const user = z.object({
+const userSchema = z.object({
   id: z.string(),
   name: z.string(),
   email: z.string().email(),
 });
+
+type User = z.infer<typeof userSchema>;
+
+const errors = makeErrors([
+  {
+    status: 404,
+    description: "No users found",
+    schema: z.object({
+      message: z.enum(["No users found", "User not found"]),
+    }),
+  },
+  {
+    status: "default",
+    description: "Default error",
+    schema: z.object({
+      message: z.string(),
+    }),
+  },
+]);
 
 const api = makeApi([
   {
@@ -30,30 +49,16 @@ const api = makeApi([
         schema: z.number().positive().optional(),
       },
     ],
-    response: z.array(user),
-    errors: [
-      {
-        status: 404,
-        description: "No users found",
-        schema: z.object({
-          message: z.literal("No users found"),
-        }),
-      },
-      {
-        status: "default",
-        description: "Default error",
-        schema: z.object({
-          message: z.string(),
-        }),
-      },
-    ],
+    response: z.array(userSchema),
+    errors,
   },
   {
     method: "get",
     path: "/users/:id",
     alias: "getUser",
     description: "Get a user by id",
-    response: user,
+    response: userSchema,
+    errors,
   },
   {
     method: "post",
@@ -65,10 +70,11 @@ const api = makeApi([
         name: "user",
         type: "Body",
         description: "The user to create",
-        schema: user.omit({ id: true }),
+        schema: userSchema.omit({ id: true }),
       },
     ],
-    response: user,
+    response: userSchema,
+    errors,
   },
   {
     method: "put",
@@ -80,10 +86,11 @@ const api = makeApi([
         name: "user",
         type: "Body",
         description: "The user to update",
-        schema: user,
+        schema: userSchema,
       },
     ],
-    response: user,
+    response: userSchema,
+    errors,
   },
   {
     method: "delete",
@@ -92,10 +99,65 @@ const api = makeApi([
     description: "Delete a user",
     response: z.void(),
     status: 204,
+    errors,
   },
 ]);
 
-const app = zodiosApp(api);
+const app = zodiosApp();
+const userRouter = zodiosRouter(api);
+
+const users: User[] = [
+  {
+    id: "1",
+    name: "John Doe",
+    email: "john.doe@test.com",
+  },
+  {
+    id: "2",
+    name: "John Doe",
+    email: "john.doe@test.com",
+  },
+];
+
+userRouter.get("/users", (req, res) => {
+  res.json(users);
+});
+
+userRouter.get("/users/:id", (req, res) => {
+  const user = users.find((user) => user.id === req.params.id);
+  if (!user) {
+    res.status(404).json({ message: "User not found" });
+  }
+  return res.json(user);
+});
+
+userRouter.post("/users", (req, res) => {
+  const user = { ...req.body, id: String(users.length + 1) };
+  users.push(user);
+  return res.json(user);
+});
+
+userRouter.put("/users/:id", (req, res) => {
+  const userIdx = users.findIndex((user) => user.id === req.params.id);
+  if (userIdx < 0) {
+    res.status(404).json({ message: "User not found" });
+  }
+  const updatedUser = { ...users[userIdx], ...req.body };
+  users[userIdx] = updatedUser;
+  return res.json(updatedUser);
+});
+
+userRouter.delete("/users/:id", (req, res) => {
+  const userIdx = users.findIndex((user) => user.id === req.params.id);
+  if (userIdx < 0) {
+    res.status(404).json({ message: "User not found" });
+  }
+  users.splice(userIdx, 1);
+  return res.status(204).send();
+});
+
+app.use("/api/v1", userRouter);
+
 const document = toOpenApi(api, {
   info: {
     title: "User API",
@@ -104,7 +166,7 @@ const document = toOpenApi(api, {
   },
   servers: [
     {
-      url: "/api",
+      url: "/api/v1",
     },
   ],
 });
