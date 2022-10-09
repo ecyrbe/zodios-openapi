@@ -14,12 +14,11 @@ function pathWithoutParams(path: string) {
 }
 
 function tagsFromPath(path: string): string[] | undefined {
-  const lastResource = pathWithoutParams(path)
+  const resources = pathWithoutParams(path)
     .replace(pathRegExp, "")
     .split("/")
-    .filter((part) => part !== "")
-    .at(-1);
-  return lastResource ? [lastResource] : undefined;
+    .filter((part) => part !== "");
+  return resources ? [resources[resources.length - 1]] : undefined;
 }
 
 export function bearerAuthScheme(): OpenAPIV3.SecuritySchemeObject {
