@@ -63,7 +63,7 @@ export function toOpenApi(
       version: "1.0.0",
     },
     servers: options?.servers,
-    security: [{ auth: [] }],
+    security: options?.securityScheme ? [{ auth: [] }] : undefined,
     paths: {},
     components: options?.securityScheme
       ? {

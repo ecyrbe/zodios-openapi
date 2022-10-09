@@ -1,6 +1,11 @@
 import { makeApi } from "@zodios/core";
 import { z } from "zod";
-import { toOpenApi } from "./openapi";
+import {
+  toOpenApi,
+  basicAuthScheme,
+  bearerAuthScheme,
+  oauth2Scheme,
+} from "./openapi";
 
 const user = z.object({
   id: z.string(),
@@ -11,7 +16,7 @@ const user = z.object({
 const api = makeApi([
   {
     method: "get",
-    path: "/users",
+    path: "/users?filter=:filter#fragment",
     alias: "getUsers",
     description: "Get all users",
     parameters: [
@@ -94,6 +99,47 @@ const api = makeApi([
 ]);
 
 describe("toOpenApi", () => {
+  it("should generate bearer scheme", () => {
+    const scheme = bearerAuthScheme();
+    expect(scheme).toEqual({
+      type: "http",
+      scheme: "bearer",
+      bearerFormat: "JWT",
+    });
+  });
+
+  it("should generate basic scheme", () => {
+    const scheme = basicAuthScheme();
+    expect(scheme).toEqual({
+      type: "http",
+      scheme: "basic",
+    });
+  });
+
+  it("should generate oauth2 scheme", () => {
+    const scheme = oauth2Scheme({
+      implicit: {
+        authorizationUrl: "https://example.com/oauth2/authorize",
+        scopes: {
+          read: "Read access",
+          write: "Write access",
+        },
+      },
+    });
+    expect(scheme).toEqual({
+      type: "oauth2",
+      flows: {
+        implicit: {
+          authorizationUrl: "https://example.com/oauth2/authorize",
+          scopes: {
+            read: "Read access",
+            write: "Write access",
+          },
+        },
+      },
+    });
+  });
+
   it("should convert to openapi", () => {
     const openApi = toOpenApi(api, {
       info: {
@@ -101,293 +147,62 @@ describe("toOpenApi", () => {
         version: "1.0.0",
       },
     });
-    expect(openApi).toEqual({
+    expect(openApi).toMatchSnapshot();
+  });
+
+  it("should convert to openapi with prefix", () => {
+    const openApi = toOpenApi(api, {
       info: {
-        title: "My API",
+        title: "My Prefixed API",
         version: "1.0.0",
       },
-      openapi: "3.0.0",
-      paths: {
-        "/users": {
-          get: {
-            description: "Get all users",
-            operationId: "getUsers",
-            parameters: [
-              {
-                description: "Limit the number of users",
-                in: "query",
-                name: "limit",
-                required: true,
-                schema: {
-                  exclusiveMinimum: true,
-                  minimum: 0,
-                  type: "number",
-                },
-              },
-              {
-                description: "Offset the number of users",
-                in: "query",
-                name: "offset",
-                required: false,
-                schema: {
-                  exclusiveMinimum: true,
-                  minimum: 0,
-                  type: "number",
-                },
-              },
-            ],
-            responses: {
-              "200": {
-                content: {
-                  "application/json": {
-                    schema: {
-                      items: {
-                        additionalProperties: false,
-                        properties: {
-                          email: {
-                            format: "email",
-                            type: "string",
-                          },
-                          id: {
-                            type: "string",
-                          },
-                          name: {
-                            type: "string",
-                          },
-                        },
-                        required: ["id", "name", "email"],
-                        type: "object",
-                      },
-                      type: "array",
-                    },
-                  },
-                },
-                description: "Success",
-              },
-              "404": {
-                content: {
-                  "application/json": {
-                    schema: {
-                      additionalProperties: false,
-                      properties: {
-                        message: {
-                          enum: ["No users found"],
-                          type: "string",
-                        },
-                      },
-                      required: ["message"],
-                      type: "object",
-                    },
-                  },
-                },
-                description: "No users found",
-              },
-              default: {
-                content: {
-                  "application/json": {
-                    schema: {
-                      additionalProperties: false,
-                      properties: {
-                        message: {
-                          type: "string",
-                        },
-                      },
-                      required: ["message"],
-                      type: "object",
-                    },
-                  },
-                },
-                description: "Default error",
-              },
-            },
-            summary: "Get all users",
-          },
-          post: {
-            description: "Create a user",
-            operationId: "createUser",
-            parameters: [],
-            requestBody: {
-              content: {
-                "application/json": {
-                  schema: {
-                    additionalProperties: false,
-                    properties: {
-                      email: {
-                        format: "email",
-                        type: "string",
-                      },
-                      name: {
-                        type: "string",
-                      },
-                    },
-                    required: ["name", "email"],
-                    type: "object",
-                  },
-                },
-              },
-              description: "The user to create",
-            },
-            responses: {
-              "200": {
-                content: {
-                  "application/json": {
-                    schema: {
-                      additionalProperties: false,
-                      properties: {
-                        email: {
-                          format: "email",
-                          type: "string",
-                        },
-                        id: {
-                          type: "string",
-                        },
-                        name: {
-                          type: "string",
-                        },
-                      },
-                      required: ["id", "name", "email"],
-                      type: "object",
-                    },
-                  },
-                },
-                description: "Success",
-              },
-            },
-            summary: "Create a user",
-          },
+      servers: [
+        {
+          url: "/api/v1",
         },
-        "/users/{id}": {
-          delete: {
-            description: "Delete a user",
-            operationId: "deleteUser",
-            parameters: [
-              {
-                in: "path",
-                name: "id",
-                required: true,
-                schema: {
-                  type: "string",
-                },
-              },
-            ],
-            responses: {
-              "204": {
-                content: {
-                  "application/json": {},
-                },
-                description: "Success",
-              },
-            },
-            summary: "Delete a user",
-          },
-          get: {
-            description: "Get a user by id",
-            operationId: "getUser",
-            parameters: [
-              {
-                in: "path",
-                name: "id",
-                required: true,
-                schema: {
-                  type: "string",
-                },
-              },
-            ],
-            responses: {
-              "200": {
-                content: {
-                  "application/json": {
-                    schema: {
-                      additionalProperties: false,
-                      properties: {
-                        email: {
-                          format: "email",
-                          type: "string",
-                        },
-                        id: {
-                          type: "string",
-                        },
-                        name: {
-                          type: "string",
-                        },
-                      },
-                      required: ["id", "name", "email"],
-                      type: "object",
-                    },
-                  },
-                },
-                description: "Success",
-              },
-            },
-            summary: "Get a user by id",
-          },
-          put: {
-            description: "Update a user",
-            operationId: "updateUser",
-            parameters: [
-              {
-                in: "path",
-                name: "id",
-                required: true,
-                schema: {
-                  type: "string",
-                },
-              },
-            ],
-            requestBody: {
-              content: {
-                "application/json": {
-                  schema: {
-                    additionalProperties: false,
-                    properties: {
-                      email: {
-                        format: "email",
-                        type: "string",
-                      },
-                      id: {
-                        type: "string",
-                      },
-                      name: {
-                        type: "string",
-                      },
-                    },
-                    required: ["id", "name", "email"],
-                    type: "object",
-                  },
-                },
-              },
-              description: "The user to update",
-            },
-            responses: {
-              "200": {
-                content: {
-                  "application/json": {
-                    schema: {
-                      additionalProperties: false,
-                      properties: {
-                        email: {
-                          format: "email",
-                          type: "string",
-                        },
-                        id: {
-                          type: "string",
-                        },
-                        name: {
-                          type: "string",
-                        },
-                      },
-                      required: ["id", "name", "email"],
-                      type: "object",
-                    },
-                  },
-                },
-                description: "Success",
-              },
-            },
-            summary: "Update a user",
-          },
-        },
-      },
+      ],
     });
+    expect(openApi).toMatchSnapshot();
+  });
+
+  it("should convert to openapi with bearer auth", () => {
+    const openApi = toOpenApi(api, {
+      info: {
+        title: "My Bearer API",
+        version: "1.0.0",
+      },
+      securityScheme: bearerAuthScheme(),
+    });
+    expect(openApi).toMatchSnapshot();
+  });
+
+  it("should convert to openapi with basic auth", () => {
+    const openApi = toOpenApi(api, {
+      info: {
+        title: "My Basic API",
+        version: "1.0.0",
+      },
+      securityScheme: basicAuthScheme(),
+    });
+    expect(openApi).toMatchSnapshot();
+  });
+
+  it("should convert to openapi with oauth2 auth", () => {
+    const openApi = toOpenApi(api, {
+      info: {
+        title: "My OAuth2 API",
+        version: "1.0.0",
+      },
+      securityScheme: oauth2Scheme({
+        implicit: {
+          authorizationUrl: "https://example.com/oauth2/authorize",
+          scopes: {
+            read: "Read access",
+            write: "Write access",
+          },
+        },
+      }),
+    });
+    expect(openApi).toMatchSnapshot();
   });
 });
