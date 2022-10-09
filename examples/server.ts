@@ -2,12 +2,19 @@ import { makeApi, makeErrors } from "@zodios/core";
 import { zodiosApp, zodiosRouter } from "@zodios/express";
 import { serve, setup } from "swagger-ui-express";
 import { z } from "zod";
-import { toOpenApi } from "../src";
+import { bearerAuthScheme, toOpenApi } from "../src";
 
 const userSchema = z.object({
   id: z.string(),
   name: z.string(),
   email: z.string().email(),
+});
+
+const commentSchema = z.object({
+  id: z.string(),
+  content: z.string(),
+  createdAt: z.string(),
+  modifiedAt: z.string(),
 });
 
 type User = z.infer<typeof userSchema>;
@@ -58,6 +65,22 @@ const api = makeApi([
     alias: "getUser",
     description: "Get a user by id",
     response: userSchema,
+    errors,
+  },
+  {
+    method: "get",
+    path: "/users/:id/comments",
+    alias: "getComments",
+    description: "Get all user comments",
+    response: z.array(commentSchema),
+    errors,
+  },
+  {
+    method: "get",
+    path: "/users/:id/comments/:commentId",
+    alias: "getComment",
+    description: "Get a user comment by id",
+    response: commentSchema,
     errors,
   },
   {
@@ -169,6 +192,7 @@ const document = toOpenApi(api, {
       url: "/api/v1",
     },
   ],
+  securityScheme: bearerAuthScheme(),
 });
 app.use(`/docs/swagger.json`, (_, res) => res.json(document));
 app.use("/docs", serve);

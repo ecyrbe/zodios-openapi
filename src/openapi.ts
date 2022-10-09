@@ -5,13 +5,57 @@ import { z } from "zod";
 
 const pathRegExp = /:([a-zA-Z_][a-zA-Z0-9_]*)/g;
 
+function pathWithoutParams(path: string) {
+  return path.indexOf("?") > -1
+    ? path.split("?")[0]
+    : path.indexOf("#") > -1
+    ? path.split("#")[0]
+    : path;
+}
+
+function tagsFromPath(path: string): string[] | undefined {
+  const lastResource = pathWithoutParams(path)
+    .replace(pathRegExp, "")
+    .split("/")
+    .filter((part) => part !== "")
+    .at(-1);
+  return lastResource ? [lastResource] : undefined;
+}
+
+export function bearerAuthScheme(): OpenAPIV3.SecuritySchemeObject {
+  return {
+    type: "http",
+    scheme: "bearer",
+    bearerFormat: "JWT",
+  };
+}
+
+export function basicAuthScheme(): OpenAPIV3.SecuritySchemeObject {
+  return {
+    type: "http",
+    scheme: "basic",
+  };
+}
+
+export function oauth2Scheme(
+  flows: OpenAPIV3.OAuth2SecurityScheme["flows"]
+): OpenAPIV3.SecuritySchemeObject {
+  return {
+    type: "oauth2",
+    flows,
+  };
+}
+
 export function toOpenApi(
   endpointDescriptions: ZodiosEnpointDescriptions,
   options?: {
     info?: OpenAPIV3.InfoObject;
     servers?: OpenAPIV3.ServerObject[];
+    securityScheme?: OpenAPIV3.SecuritySchemeObject;
+    tagsFromPathFn?: (path: string) => string[];
   }
 ): OpenAPIV3.Document {
+  const { tagsFromPathFn = tagsFromPath } = options || {};
   const openApi: OpenAPIV3.Document = {
     openapi: "3.0.0",
     info: options?.info ?? {
@@ -19,7 +63,15 @@ export function toOpenApi(
       version: "1.0.0",
     },
     servers: options?.servers,
+    security: [{ auth: [] }],
     paths: {},
+    components: options?.securityScheme
+      ? {
+          securitySchemes: {
+            auth: options.securityScheme,
+          },
+        }
+      : undefined,
   };
   for (let endpoint of endpointDescriptions) {
     const responses: OpenAPIV3.ResponsesObject = {
@@ -87,6 +139,7 @@ export function toOpenApi(
       operationId: endpoint.alias,
       summary: endpoint.description,
       description: endpoint.description,
+      tags: tagsFromPathFn(endpoint.path),
       requestBody: body
         ? {
             description: body.description,
