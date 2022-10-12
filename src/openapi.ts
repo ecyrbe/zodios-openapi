@@ -1,9 +1,13 @@
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { OpenAPIV3 } from "openapi-types";
-import type { ZodiosEnpointDescriptions } from "@zodios/core";
+import type {
+  ZodiosEndpointDefinition,
+  ZodiosEndpointDefinitions,
+} from "@zodios/core";
 import { z } from "zod";
 
 const pathRegExp = /:([a-zA-Z_][a-zA-Z0-9_]*)/g;
+const expludedParamTypes = ["Body", "Path"];
 
 function pathWithoutParams(path: string) {
   return path.indexOf("?") > -1
@@ -45,8 +49,14 @@ export function oauth2Scheme(
   };
 }
 
+function findPathParam(endpoint: ZodiosEndpointDefinition, paramName: string) {
+  return endpoint.parameters?.find(
+    (param) => param.type === "Path" && param.name === paramName
+  );
+}
+
 export function toOpenApi(
-  endpointDescriptions: ZodiosEnpointDescriptions,
+  endpointDescriptions: ZodiosEndpointDefinitions,
   options?: {
     info?: OpenAPIV3.InfoObject;
     servers?: OpenAPIV3.ServerObject[];
@@ -103,19 +113,32 @@ export function toOpenApi(
     if (pathParams) {
       for (let pathParam of pathParams) {
         const paramName = pathParam.slice(1);
-        parameters.push({
-          name: paramName,
-          in: "path",
-          schema: {
-            type: "string",
-          },
-          required: true,
-        });
+        const param = findPathParam(endpoint, paramName);
+        if (param) {
+          parameters.push({
+            name: paramName,
+            description: param.description,
+            in: "path",
+            schema: zodToJsonSchema(param.schema, {
+              target: "openApi3",
+            }) as OpenAPIV3.SchemaObject,
+            required: true,
+          });
+        } else {
+          parameters.push({
+            name: paramName,
+            in: "path",
+            schema: {
+              type: "string",
+            },
+            required: true,
+          });
+        }
       }
     }
     // extract all other parameters from endpoint
     for (let param of endpoint.parameters ?? []) {
-      if (param.type !== "Body") {
+      if (!expludedParamTypes.includes(param.type)) {
         const required = !param.schema.isOptional();
         const schema = required
           ? param.schema
