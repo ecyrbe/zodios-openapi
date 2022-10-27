@@ -5,6 +5,7 @@ import {
   basicAuthScheme,
   bearerAuthScheme,
   oauth2Scheme,
+  openApiBuilder,
 } from "./openapi";
 
 const user = z.object({
@@ -203,6 +204,28 @@ describe("toOpenApi", () => {
         },
       }),
     });
+    expect(openApi).toMatchSnapshot();
+  });
+
+  it("should convert to openapi with builder", () => {
+    const openApi = openApiBuilder({
+      title: "My API",
+      version: "1.0.0",
+    })
+      .addPublicApi(api)
+      .build();
+    expect(openApi).toMatchSnapshot();
+  });
+
+  it("should convert to openapi with builder with security", () => {
+    const openApi = openApiBuilder({
+      title: "My API",
+      version: "1.0.0",
+    })
+      .addServer({ url: "/api/v1" })
+      .addSecurityScheme("auth", bearerAuthScheme())
+      .addProtectedApi("auth", api)
+      .build();
     expect(openApi).toMatchSnapshot();
   });
 });

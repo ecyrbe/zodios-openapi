@@ -2,7 +2,7 @@ import { makeApi, makeErrors } from "@zodios/core";
 import { zodiosApp, zodiosRouter } from "@zodios/express";
 import { serve, setup } from "swagger-ui-express";
 import { z } from "zod";
-import { bearerAuthScheme, toOpenApi } from "../src";
+import { bearerAuthScheme, openApiBuilder } from "../src";
 
 const userSchema = z.object({
   id: z.string(),
@@ -83,6 +83,9 @@ const api = makeApi([
     response: commentSchema,
     errors,
   },
+]);
+
+const adminApi = makeApi([
   {
     method: "post",
     path: "/users",
@@ -127,7 +130,7 @@ const api = makeApi([
 ]);
 
 const app = zodiosApp();
-const userRouter = zodiosRouter(api);
+const userRouter = zodiosRouter([...api, ...adminApi]);
 
 const users: User[] = [
   {
@@ -181,19 +184,17 @@ userRouter.delete("/users/:id", (req, res) => {
 
 app.use("/api/v1", userRouter);
 
-const document = toOpenApi(api, {
-  info: {
-    title: "User API",
-    version: "1.0.0",
-    description: "A simple user API",
-  },
-  servers: [
-    {
-      url: "/api/v1",
-    },
-  ],
-  securityScheme: bearerAuthScheme(),
-});
+const document = openApiBuilder({
+  title: "User API",
+  version: "1.0.0",
+  description: "A simple user API",
+})
+  .addServer({ url: "/api/v1" })
+  .addSecurityScheme("admin", bearerAuthScheme())
+  .addPublicApi(api)
+  .addProtectedApi("admin", adminApi)
+  .build();
+
 app.use(`/docs/swagger.json`, (_, res) => res.json(document));
 app.use("/docs", serve);
 app.use("/docs", setup(undefined, { swaggerUrl: "/docs/swagger.json" }));
