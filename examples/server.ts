@@ -59,7 +59,11 @@ const api = makeApi([
         name: "filter",
         type: "Query",
         description: "Filter users by name",
-        schema: z.array(z.string()).optional(),
+        schema: z
+          .array(z.string())
+          .refine((array) => array.length === new Set(array).size, {
+            message: "Duplicate values are not allowed",
+          }),
       },
     ],
     response: z.array(userSchema),
