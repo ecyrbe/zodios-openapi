@@ -5,6 +5,7 @@ import type {
   ZodiosEndpointDefinitions,
 } from "@zodios/core";
 import { z } from "zod";
+import { isZodType } from "./utils";
 
 const pathRegExp = /:([a-zA-Z_][a-zA-Z0-9_]*)/g;
 const expludedParamTypes = ["Body", "Path"];
@@ -174,7 +175,11 @@ function makeOpenApi(options: {
             ? param.schema
             : (param.schema as z.ZodOptional<z.ZodType>).unwrap();
           parameters.push({
-            name: param.name,
+            name:
+              param.type === "Query" &&
+              isZodType(param.schema, z.ZodFirstPartyTypeKind.ZodArray)
+                ? `${param.name}[]`
+                : param.name,
             in: param.type.toLowerCase(),
             schema: zodToJsonSchema(schema, {
               target: "openApi3",
