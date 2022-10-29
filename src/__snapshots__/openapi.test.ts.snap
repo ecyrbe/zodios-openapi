@@ -266,8 +266,9 @@ exports[`toOpenApi should convert to openapi 1`] = `
             "description": "Limit the number of users",
             "in": "query",
             "name": "limit",
-            "required": true,
+            "required": false,
             "schema": {
+              "default": 10,
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
@@ -282,6 +283,18 @@ exports[`toOpenApi should convert to openapi 1`] = `
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
+            },
+          },
+          {
+            "description": "Filter users by name",
+            "in": "query",
+            "name": "filter[]",
+            "required": true,
+            "schema": {
+              "items": {
+                "type": "string",
+              },
+              "type": "array",
             },
           },
         ],
@@ -651,8 +664,9 @@ exports[`toOpenApi should convert to openapi with basic auth 1`] = `
             "description": "Limit the number of users",
             "in": "query",
             "name": "limit",
-            "required": true,
+            "required": false,
             "schema": {
+              "default": 10,
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
@@ -667,6 +681,18 @@ exports[`toOpenApi should convert to openapi with basic auth 1`] = `
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
+            },
+          },
+          {
+            "description": "Filter users by name",
+            "in": "query",
+            "name": "filter[]",
+            "required": true,
+            "schema": {
+              "items": {
+                "type": "string",
+              },
+              "type": "array",
             },
           },
         ],
@@ -1037,8 +1063,9 @@ exports[`toOpenApi should convert to openapi with bearer auth 1`] = `
             "description": "Limit the number of users",
             "in": "query",
             "name": "limit",
-            "required": true,
+            "required": false,
             "schema": {
+              "default": 10,
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
@@ -1053,6 +1080,18 @@ exports[`toOpenApi should convert to openapi with bearer auth 1`] = `
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
+            },
+          },
+          {
+            "description": "Filter users by name",
+            "in": "query",
+            "name": "filter[]",
+            "required": true,
+            "schema": {
+              "items": {
+                "type": "string",
+              },
+              "type": "array",
             },
           },
         ],
@@ -1397,8 +1436,9 @@ exports[`toOpenApi should convert to openapi with builder 1`] = `
             "description": "Limit the number of users",
             "in": "query",
             "name": "limit",
-            "required": true,
+            "required": false,
             "schema": {
+              "default": 10,
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
@@ -1413,6 +1453,18 @@ exports[`toOpenApi should convert to openapi with builder 1`] = `
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
+            },
+          },
+          {
+            "description": "Filter users by name",
+            "in": "query",
+            "name": "filter[]",
+            "required": true,
+            "schema": {
+              "items": {
+                "type": "string",
+              },
+              "type": "array",
             },
           },
         ],
@@ -1779,8 +1831,9 @@ exports[`toOpenApi should convert to openapi with builder with security 1`] = `
             "description": "Limit the number of users",
             "in": "query",
             "name": "limit",
-            "required": true,
+            "required": false,
             "schema": {
+              "default": 10,
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
@@ -1795,6 +1848,18 @@ exports[`toOpenApi should convert to openapi with builder with security 1`] = `
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
+            },
+          },
+          {
+            "description": "Filter users by name",
+            "in": "query",
+            "name": "filter[]",
+            "required": true,
+            "schema": {
+              "items": {
+                "type": "string",
+              },
+              "type": "array",
             },
           },
         ],
@@ -2176,8 +2241,9 @@ exports[`toOpenApi should convert to openapi with oauth2 auth 1`] = `
             "description": "Limit the number of users",
             "in": "query",
             "name": "limit",
-            "required": true,
+            "required": false,
             "schema": {
+              "default": 10,
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
@@ -2192,6 +2258,18 @@ exports[`toOpenApi should convert to openapi with oauth2 auth 1`] = `
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
+            },
+          },
+          {
+            "description": "Filter users by name",
+            "in": "query",
+            "name": "filter[]",
+            "required": true,
+            "schema": {
+              "items": {
+                "type": "string",
+              },
+              "type": "array",
             },
           },
         ],
@@ -2552,8 +2630,9 @@ exports[`toOpenApi should convert to openapi with prefix 1`] = `
             "description": "Limit the number of users",
             "in": "query",
             "name": "limit",
-            "required": true,
+            "required": false,
             "schema": {
+              "default": 10,
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
@@ -2568,6 +2647,18 @@ exports[`toOpenApi should convert to openapi with prefix 1`] = `
               "exclusiveMinimum": true,
               "minimum": 0,
               "type": "number",
+            },
+          },
+          {
+            "description": "Filter users by name",
+            "in": "query",
+            "name": "filter[]",
+            "required": true,
+            "schema": {
+              "items": {
+                "type": "string",
+              },
+              "type": "array",
             },
           },
         ],

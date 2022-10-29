@@ -25,13 +25,21 @@ const api = makeApi([
         name: "limit",
         type: "Query",
         description: "Limit the number of users",
-        schema: z.number().positive(),
+        schema: z.number().positive().default(10),
       },
       {
         name: "offset",
         type: "Query",
         description: "Offset the number of users",
         schema: z.number().positive().optional(),
+      },
+      {
+        name: "filter",
+        type: "Query",
+        description: "Filter users by name",
+        schema: z
+          .array(z.string())
+          .refine((a) => new Set(a).size === a.length, "No duplicates allowed"),
       },
     ],
     response: z.array(user),

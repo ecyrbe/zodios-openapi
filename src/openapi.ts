@@ -171,9 +171,11 @@ function makeOpenApi(options: {
       for (let param of endpoint.parameters ?? []) {
         if (!expludedParamTypes.includes(param.type)) {
           const required = !param.schema.isOptional();
-          const schema = required
-            ? param.schema
-            : (param.schema as z.ZodOptional<z.ZodType>).unwrap();
+          const schema =
+            required ||
+            !isZodType(param.schema, z.ZodFirstPartyTypeKind.ZodOptional)
+              ? param.schema
+              : (param.schema as z.ZodOptional<z.ZodType>).unwrap();
           parameters.push({
             name:
               param.type === "Query" &&

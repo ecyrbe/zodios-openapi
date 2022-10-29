@@ -47,7 +47,7 @@ const api = makeApi([
         name: "limit",
         type: "Query",
         description: "Limit the number of users",
-        schema: z.number().positive().optional(),
+        schema: z.number().positive().default(10),
       },
       {
         name: "offset",
