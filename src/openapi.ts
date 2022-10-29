@@ -257,13 +257,8 @@ export function toOpenApi(
   });
 }
 
-/**
- * Builder to easily create an openapi V3 document from zodios api definitions
- * @param info - the info object to add to the document
- * @returns - the openapi V3 builder
- */
-export function openApiBuilder(info: OpenAPIV3.InfoObject) {
-  const apis: Array<
+export class OpenApiBuilder {
+  apis: Array<
     | {
         definitions: ZodiosEndpointDefinitions;
       }
@@ -273,71 +268,82 @@ export function openApiBuilder(info: OpenAPIV3.InfoObject) {
         definitions: ZodiosEndpointDefinitions;
       }
   > = [];
-  const options: {
+  options: {
     info: OpenAPIV3.InfoObject;
     servers?: OpenAPIV3.ServerObject[];
     securitySchemes?: Record<string, OpenAPIV3.SecuritySchemeObject>;
     tagsFromPathFn?: (path: string) => string[];
-  } = { info };
-  return {
-    /**
-     * add a security scheme to proctect the apis
-     * @param name - the name of the security scheme
-     * @param securityScheme - the security scheme object
-     */
-    addSecurityScheme(
-      name: string,
-      securityScheme: OpenAPIV3.SecuritySchemeObject
-    ) {
-      options.securitySchemes = options.securitySchemes ?? {};
-      options.securitySchemes[name] = securityScheme;
-      return this;
-    },
-    /**
-     * add an api with public endpoints
-     * @param definitions - the endpoint definitions
-     * @returns
-     */
-    addPublicApi(definitions: ZodiosEndpointDefinitions) {
-      apis.push({ definitions });
-      return this;
-    },
-    /**
-     * add an api protected by a security scheme
-     * @param scheme - the name of the security scheme to use
-     * @param definitions - the endpoints API
-     * @param securityRequirement - optional security requirement to use for this API (oauth2 scopes for example)
-     */
-    addProtectedApi(
-      scheme: string,
-      definitions: ZodiosEndpointDefinitions,
-      securityRequirement?: string[]
-    ) {
-      apis.push({ scheme, definitions, securityRequirement });
-      return this;
-    },
-    /**
-     * add a server to the openapi document
-     * @param server - the server to add
-     */
-    addServer(server: OpenAPIV3.ServerObject) {
-      options.servers = options.servers ?? [];
-      options.servers.push(server);
-      return this;
-    },
-    /**
-     * ovveride the default tagsFromPathFn
-     * @param tagsFromPathFn - a function that takes a path and returns the tags to use for this path
-     */
-    setCustomTagsFn(tagsFromPathFn: (path: string) => string[]) {
-      options.tagsFromPathFn = tagsFromPathFn;
-      return this;
-    },
-    build() {
-      return makeOpenApi({
-        apis,
-        ...options,
-      });
-    },
   };
+  constructor(info: OpenAPIV3.InfoObject) {
+    this.options = { info };
+  }
+
+  /**
+   * add a security scheme to proctect the apis
+   * @param name - the name of the security scheme
+   * @param securityScheme - the security scheme object
+   */
+  addSecurityScheme(
+    name: string,
+    securityScheme: OpenAPIV3.SecuritySchemeObject
+  ) {
+    this.options.securitySchemes ??= {};
+    this.options.securitySchemes[name] = securityScheme;
+    return this;
+  }
+  /**
+   * add an api with public endpoints
+   * @param definitions - the endpoint definitions
+   * @returns
+   */
+  addPublicApi(definitions: ZodiosEndpointDefinitions) {
+    this.apis.push({ definitions });
+    return this;
+  }
+  /**
+   * add an api protected by a security scheme
+   * @param scheme - the name of the security scheme to use
+   * @param definitions - the endpoints API
+   * @param securityRequirement - optional security requirement to use for this API (oauth2 scopes for example)
+   */
+  addProtectedApi(
+    scheme: string,
+    definitions: ZodiosEndpointDefinitions,
+    securityRequirement?: string[]
+  ) {
+    this.apis.push({ scheme, definitions, securityRequirement });
+    return this;
+  }
+  /**
+   * add a server to the openapi document
+   * @param server - the server to add
+   */
+  addServer(server: OpenAPIV3.ServerObject) {
+    this.options.servers ??= [];
+    this.options.servers.push(server);
+    return this;
+  }
+  /**
+   * ovveride the default tagsFromPathFn
+   * @param tagsFromPathFn - a function that takes a path and returns the tags to use for this path
+   */
+  setCustomTagsFn(tagsFromPathFn: (path: string) => string[]) {
+    this.options.tagsFromPathFn = tagsFromPathFn;
+    return this;
+  }
+  build() {
+    return makeOpenApi({
+      apis: this.apis,
+      ...this.options,
+    });
+  }
+}
+
+/**
+ * Builder to easily create an openapi V3 document from zodios api definitions
+ * @param info - the info object to add to the document
+ * @returns - the openapi V3 builder
+ */
+export function openApiBuilder(info: OpenAPIV3.InfoObject) {
+  return new OpenApiBuilder(info);
 }
