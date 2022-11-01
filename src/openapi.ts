@@ -116,7 +116,7 @@ function makeOpenApi(options: {
     for (let endpoint of api.definitions) {
       const responses: OpenAPIV3.ResponsesObject = {
         [`${endpoint.status ?? 200}`]: {
-          description: "Success",
+          description: endpoint.responseDescription ?? "Success",
           content: {
             "application/json": {
               schema: zodToJsonSchema(endpoint.response, {
