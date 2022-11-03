@@ -75,6 +75,13 @@ function findPathParam(endpoint: ZodiosEndpointDefinition, paramName: string) {
   );
 }
 
+function makeJsonSchema(schema: z.ZodTypeAny) {
+  return zodToJsonSchema(schema, {
+    target: "openApi3",
+    $refStrategy: "none",
+  }) as OpenAPIV3.SchemaObject;
+}
+
 /**
  * Create an openapi V3 document from a list of api definitions
  * Use this function if you want to define multiple apis protected by different security schemes
@@ -119,9 +126,7 @@ function makeOpenApi(options: {
           description: endpoint.responseDescription ?? "Success",
           content: {
             "application/json": {
-              schema: zodToJsonSchema(endpoint.response, {
-                target: "openApi3",
-              }) as OpenAPIV3.SchemaObject,
+              schema: makeJsonSchema(endpoint.response),
             },
           },
         },
@@ -131,9 +136,7 @@ function makeOpenApi(options: {
           description: error.description ?? "Error",
           content: {
             "application/json": {
-              schema: zodToJsonSchema(error.schema, {
-                target: "openApi3",
-              }) as OpenAPIV3.SchemaObject,
+              schema: makeJsonSchema(error.schema),
             },
           },
         };
@@ -150,9 +153,7 @@ function makeOpenApi(options: {
               name: paramName,
               description: param.description,
               in: "path",
-              schema: zodToJsonSchema(param.schema, {
-                target: "openApi3",
-              }) as OpenAPIV3.SchemaObject,
+              schema: makeJsonSchema(param.schema),
               required: true,
             });
           } else {
@@ -183,9 +184,7 @@ function makeOpenApi(options: {
                 ? `${param.name}[]`
                 : param.name,
             in: param.type.toLowerCase(),
-            schema: zodToJsonSchema(schema, {
-              target: "openApi3",
-            }) as OpenAPIV3.SchemaObject,
+            schema: makeJsonSchema(schema),
             description: param.description,
             required,
           } as OpenAPIV3.ParameterObject);
@@ -208,9 +207,7 @@ function makeOpenApi(options: {
               description: body.description,
               content: {
                 "application/json": {
-                  schema: zodToJsonSchema(body.schema, {
-                    target: "openApi3",
-                  }) as OpenAPIV3.SchemaObject,
+                  schema: makeJsonSchema(body.schema),
                 },
               },
             }
