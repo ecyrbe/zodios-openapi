@@ -60,6 +60,6 @@
   },
   "dependencies": {
     "openapi-types": "12.0.2",
-    "zod-to-json-schema": "3.18.1"
+    "zod-to-json-schema": "3.19.0"
   }
 }
