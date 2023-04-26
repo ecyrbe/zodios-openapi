@@ -16,6 +16,10 @@ exports[`toOpenApi should convert to openapi 1`] = `
         "requestBody": {
           "content": {
             "application/json": {
+              "example": {
+                "email": "rita@bluesky.com",
+                "name": "Rita",
+              },
               "schema": {
                 "additionalProperties": false,
                 "properties": {
@@ -264,6 +268,7 @@ exports[`toOpenApi should convert to openapi 1`] = `
           },
           {
             "description": "Limit the number of users",
+            "example": 10,
             "in": "query",
             "name": "limit",
             "required": false,
@@ -276,6 +281,7 @@ exports[`toOpenApi should convert to openapi 1`] = `
           },
           {
             "description": "Offset the number of users",
+            "example": 1,
             "in": "query",
             "name": "offset",
             "required": false,
@@ -303,6 +309,15 @@ exports[`toOpenApi should convert to openapi 1`] = `
           "200": {
             "content": {
               "application/json": {
+                "examples": {
+                  "Dexter": {
+                    "value": {
+                      "email": "dexter@bluesky.com",
+                      "id": "1",
+                      "name": "Dexter",
+                    },
+                  },
+                },
                 "schema": {
                   "items": {
                     "additionalProperties": false,
@@ -334,6 +349,9 @@ exports[`toOpenApi should convert to openapi 1`] = `
           "404": {
             "content": {
               "application/json": {
+                "example": {
+                  "message": "No users found",
+                },
                 "schema": {
                   "additionalProperties": false,
                   "properties": {
@@ -414,6 +432,10 @@ exports[`toOpenApi should convert to openapi with basic auth 1`] = `
         "requestBody": {
           "content": {
             "application/json": {
+              "example": {
+                "email": "rita@bluesky.com",
+                "name": "Rita",
+              },
               "schema": {
                 "additionalProperties": false,
                 "properties": {
@@ -662,6 +684,7 @@ exports[`toOpenApi should convert to openapi with basic auth 1`] = `
           },
           {
             "description": "Limit the number of users",
+            "example": 10,
             "in": "query",
             "name": "limit",
             "required": false,
@@ -674,6 +697,7 @@ exports[`toOpenApi should convert to openapi with basic auth 1`] = `
           },
           {
             "description": "Offset the number of users",
+            "example": 1,
             "in": "query",
             "name": "offset",
             "required": false,
@@ -701,6 +725,15 @@ exports[`toOpenApi should convert to openapi with basic auth 1`] = `
           "200": {
             "content": {
               "application/json": {
+                "examples": {
+                  "Dexter": {
+                    "value": {
+                      "email": "dexter@bluesky.com",
+                      "id": "1",
+                      "name": "Dexter",
+                    },
+                  },
+                },
                 "schema": {
                   "items": {
                     "additionalProperties": false,
@@ -732,6 +765,9 @@ exports[`toOpenApi should convert to openapi with basic auth 1`] = `
           "404": {
             "content": {
               "application/json": {
+                "example": {
+                  "message": "No users found",
+                },
                 "schema": {
                   "additionalProperties": false,
                   "properties": {
@@ -813,6 +849,10 @@ exports[`toOpenApi should convert to openapi with bearer auth 1`] = `
         "requestBody": {
           "content": {
             "application/json": {
+              "example": {
+                "email": "rita@bluesky.com",
+                "name": "Rita",
+              },
               "schema": {
                 "additionalProperties": false,
                 "properties": {
@@ -1061,6 +1101,7 @@ exports[`toOpenApi should convert to openapi with bearer auth 1`] = `
           },
           {
             "description": "Limit the number of users",
+            "example": 10,
             "in": "query",
             "name": "limit",
             "required": false,
@@ -1073,6 +1114,7 @@ exports[`toOpenApi should convert to openapi with bearer auth 1`] = `
           },
           {
             "description": "Offset the number of users",
+            "example": 1,
             "in": "query",
             "name": "offset",
             "required": false,
@@ -1100,6 +1142,15 @@ exports[`toOpenApi should convert to openapi with bearer auth 1`] = `
           "200": {
             "content": {
               "application/json": {
+                "examples": {
+                  "Dexter": {
+                    "value": {
+                      "email": "dexter@bluesky.com",
+                      "id": "1",
+                      "name": "Dexter",
+                    },
+                  },
+                },
                 "schema": {
                   "items": {
                     "additionalProperties": false,
@@ -1131,6 +1182,9 @@ exports[`toOpenApi should convert to openapi with bearer auth 1`] = `
           "404": {
             "content": {
               "application/json": {
+                "example": {
+                  "message": "No users found",
+                },
                 "schema": {
                   "additionalProperties": false,
                   "properties": {
@@ -1202,6 +1256,10 @@ exports[`toOpenApi should convert to openapi with builder 1`] = `
         "requestBody": {
           "content": {
             "application/json": {
+              "example": {
+                "email": "rita@bluesky.com",
+                "name": "Rita",
+              },
               "schema": {
                 "additionalProperties": false,
                 "properties": {
@@ -1434,6 +1492,7 @@ exports[`toOpenApi should convert to openapi with builder 1`] = `
           },
           {
             "description": "Limit the number of users",
+            "example": 10,
             "in": "query",
             "name": "limit",
             "required": false,
@@ -1446,6 +1505,7 @@ exports[`toOpenApi should convert to openapi with builder 1`] = `
           },
           {
             "description": "Offset the number of users",
+            "example": 1,
             "in": "query",
             "name": "offset",
             "required": false,
@@ -1473,6 +1533,15 @@ exports[`toOpenApi should convert to openapi with builder 1`] = `
           "200": {
             "content": {
               "application/json": {
+                "examples": {
+                  "Dexter": {
+                    "value": {
+                      "email": "dexter@bluesky.com",
+                      "id": "1",
+                      "name": "Dexter",
+                    },
+                  },
+                },
                 "schema": {
                   "items": {
                     "additionalProperties": false,
@@ -1504,6 +1573,9 @@ exports[`toOpenApi should convert to openapi with builder 1`] = `
           "404": {
             "content": {
               "application/json": {
+                "example": {
+                  "message": "No users found",
+                },
                 "schema": {
                   "additionalProperties": false,
                   "properties": {
@@ -1581,6 +1653,10 @@ exports[`toOpenApi should convert to openapi with builder with security 1`] = `
         "requestBody": {
           "content": {
             "application/json": {
+              "example": {
+                "email": "rita@bluesky.com",
+                "name": "Rita",
+              },
               "schema": {
                 "additionalProperties": false,
                 "properties": {
@@ -1829,6 +1905,7 @@ exports[`toOpenApi should convert to openapi with builder with security 1`] = `
           },
           {
             "description": "Limit the number of users",
+            "example": 10,
             "in": "query",
             "name": "limit",
             "required": false,
@@ -1841,6 +1918,7 @@ exports[`toOpenApi should convert to openapi with builder with security 1`] = `
           },
           {
             "description": "Offset the number of users",
+            "example": 1,
             "in": "query",
             "name": "offset",
             "required": false,
@@ -1868,6 +1946,15 @@ exports[`toOpenApi should convert to openapi with builder with security 1`] = `
           "200": {
             "content": {
               "application/json": {
+                "examples": {
+                  "Dexter": {
+                    "value": {
+                      "email": "dexter@bluesky.com",
+                      "id": "1",
+                      "name": "Dexter",
+                    },
+                  },
+                },
                 "schema": {
                   "items": {
                     "additionalProperties": false,
@@ -1899,6 +1986,9 @@ exports[`toOpenApi should convert to openapi with builder with security 1`] = `
           "404": {
             "content": {
               "application/json": {
+                "example": {
+                  "message": "No users found",
+                },
                 "schema": {
                   "additionalProperties": false,
                   "properties": {
@@ -1991,6 +2081,10 @@ exports[`toOpenApi should convert to openapi with oauth2 auth 1`] = `
         "requestBody": {
           "content": {
             "application/json": {
+              "example": {
+                "email": "rita@bluesky.com",
+                "name": "Rita",
+              },
               "schema": {
                 "additionalProperties": false,
                 "properties": {
@@ -2239,6 +2333,7 @@ exports[`toOpenApi should convert to openapi with oauth2 auth 1`] = `
           },
           {
             "description": "Limit the number of users",
+            "example": 10,
             "in": "query",
             "name": "limit",
             "required": false,
@@ -2251,6 +2346,7 @@ exports[`toOpenApi should convert to openapi with oauth2 auth 1`] = `
           },
           {
             "description": "Offset the number of users",
+            "example": 1,
             "in": "query",
             "name": "offset",
             "required": false,
@@ -2278,6 +2374,15 @@ exports[`toOpenApi should convert to openapi with oauth2 auth 1`] = `
           "200": {
             "content": {
               "application/json": {
+                "examples": {
+                  "Dexter": {
+                    "value": {
+                      "email": "dexter@bluesky.com",
+                      "id": "1",
+                      "name": "Dexter",
+                    },
+                  },
+                },
                 "schema": {
                   "items": {
                     "additionalProperties": false,
@@ -2309,6 +2414,9 @@ exports[`toOpenApi should convert to openapi with oauth2 auth 1`] = `
           "404": {
             "content": {
               "application/json": {
+                "example": {
+                  "message": "No users found",
+                },
                 "schema": {
                   "additionalProperties": false,
                   "properties": {
@@ -2380,6 +2488,10 @@ exports[`toOpenApi should convert to openapi with prefix 1`] = `
         "requestBody": {
           "content": {
             "application/json": {
+              "example": {
+                "email": "rita@bluesky.com",
+                "name": "Rita",
+              },
               "schema": {
                 "additionalProperties": false,
                 "properties": {
@@ -2628,6 +2740,7 @@ exports[`toOpenApi should convert to openapi with prefix 1`] = `
           },
           {
             "description": "Limit the number of users",
+            "example": 10,
             "in": "query",
             "name": "limit",
             "required": false,
@@ -2640,6 +2753,7 @@ exports[`toOpenApi should convert to openapi with prefix 1`] = `
           },
           {
             "description": "Offset the number of users",
+            "example": 1,
             "in": "query",
             "name": "offset",
             "required": false,
@@ -2667,6 +2781,15 @@ exports[`toOpenApi should convert to openapi with prefix 1`] = `
           "200": {
             "content": {
               "application/json": {
+                "examples": {
+                  "Dexter": {
+                    "value": {
+                      "email": "dexter@bluesky.com",
+                      "id": "1",
+                      "name": "Dexter",
+                    },
+                  },
+                },
                 "schema": {
                   "items": {
                     "additionalProperties": false,
@@ -2698,6 +2821,9 @@ exports[`toOpenApi should convert to openapi with prefix 1`] = `
           "404": {
             "content": {
               "application/json": {
+                "example": {
+                  "message": "No users found",
+                },
                 "schema": {
                   "additionalProperties": false,
                   "properties": {
