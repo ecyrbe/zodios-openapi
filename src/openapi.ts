@@ -123,7 +123,10 @@ function makeOpenApi(options: {
     for (let endpoint of api.definitions) {
       const responses: OpenAPIV3.ResponsesObject = {
         [`${endpoint.status ?? 200}`]: {
-          description: endpoint.responseDescription ?? "Success",
+          description:
+            endpoint.responseDescription ??
+            endpoint.response.description ??
+            "Success",
           content: {
             "application/json": {
               schema: makeJsonSchema(endpoint.response),
@@ -133,7 +136,7 @@ function makeOpenApi(options: {
       };
       for (let error of endpoint.errors ?? []) {
         responses[`${error.status}`] = {
-          description: error.description ?? "Error",
+          description: error.description ?? error.schema.description ?? "Error",
           content: {
             "application/json": {
               schema: makeJsonSchema(error.schema),
@@ -151,7 +154,7 @@ function makeOpenApi(options: {
           if (param) {
             parameters.push({
               name: paramName,
-              description: param.description,
+              description: param.description ?? param.schema.description,
               in: "path",
               schema: makeJsonSchema(param.schema),
               required: true,
@@ -172,11 +175,13 @@ function makeOpenApi(options: {
       for (let param of endpoint.parameters ?? []) {
         if (!expludedParamTypes.includes(param.type)) {
           const required = !param.schema.isOptional();
+          const schemaDesc = param.schema.description;
           const schema =
             required ||
             !isZodType(param.schema, z.ZodFirstPartyTypeKind.ZodOptional)
               ? param.schema
               : (param.schema as z.ZodOptional<z.ZodType>).unwrap();
+
           parameters.push({
             name:
               param.type === "Query" &&
@@ -185,7 +190,7 @@ function makeOpenApi(options: {
                 : param.name,
             in: param.type.toLowerCase(),
             schema: makeJsonSchema(schema),
-            description: param.description,
+            description: param.description ?? schemaDesc,
             required,
           } as OpenAPIV3.ParameterObject);
         }
@@ -204,7 +209,7 @@ function makeOpenApi(options: {
             : undefined,
         requestBody: body
           ? {
-              description: body.description,
+              description: body.description ?? body.schema.description,
               content: {
                 "application/json": {
                   schema: makeJsonSchema(body.schema),
