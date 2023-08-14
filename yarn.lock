@@ -3513,7 +3513,7 @@ zod-to-json-schema@3.19.1:
   resolved "https://registry.yarnpkg.com/zod-to-json-schema/-/zod-to-json-schema-3.19.1.tgz#10160724c3749c9c3b0a86ce07f18714e6fa25d3"
   integrity sha512-yZiMqANy17jBPm5F71srrMJIpHeHgwkjIAhxGIRzlwguvipeQ4x77tJeXbowXljn7r8zZYf4Uk8E3Hqf6+sKjA==
 
-zod@3.21.4:
-  version "3.21.4"
-  resolved "https://registry.yarnpkg.com/zod/-/zod-3.21.4.tgz#10882231d992519f0a10b5dd58a38c9dabbb64db"
-  integrity sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==
+zod@3.22.0:
+  version "3.22.0"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.22.0.tgz#2478211a9bf477eb2d7d2ce031b5f8ff0d596407"
+  integrity sha512-y5KZY/ssf5n7hCGDGGtcJO/EBJEm5Pa+QQvFBeyMOtnFYOSflalxIFFvdaYevPhePcmcKC4aTbFkCcXN7D0O8Q==
