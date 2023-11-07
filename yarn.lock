@@ -834,10 +834,10 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.1.tgz#20f18294f797f2209b5f65c8e3b5c8e8261d127c"
   integrity sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==
 
-"@types/swagger-ui-express@4.1.4":
-  version "4.1.4"
-  resolved "https://registry.yarnpkg.com/@types/swagger-ui-express/-/swagger-ui-express-4.1.4.tgz#4cf91ed46a4d17797a38cbf9805ad6fa4730dad6"
-  integrity sha512-h6dfIPFveCJKpStDtjrB+4pig4DAf9Uu2Z51RB7Fj3s6AifexmqhZxBoG50K/k3Afz7wyXsIAY5ZIDTlC2VjrQ==
+"@types/swagger-ui-express@4.1.6":
+  version "4.1.6"
+  resolved "https://registry.yarnpkg.com/@types/swagger-ui-express/-/swagger-ui-express-4.1.6.tgz#d0929e3fabac1a96a8a9c6c7ee8d42362c5cdf48"
+  integrity sha512-UVSiGYXa5IzdJJG3hrc86e8KdZWLYxyEsVoUI4iPXc7CO4VZ3AfNP8d/8+hrDRIqz+HAaSMtZSqAsF3Nq2X/Dg==
   dependencies:
     "@types/express" "*"
     "@types/serve-static" "*"
