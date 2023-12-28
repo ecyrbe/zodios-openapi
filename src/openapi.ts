@@ -120,7 +120,8 @@ function makeOpenApi(options: {
     };
   }
   for (let api of options.apis) {
-    for (let endpoint of api.definitions) {
+    const definitions = Array.isArray(api.definitions) ? api.definitions : [api.definitions]
+    for (let endpoint of definitions) {
       const responses: OpenAPIV3.ResponsesObject = {
         [`${endpoint.status ?? 200}`]: {
           description:
