@@ -75,11 +75,22 @@ function findPathParam(endpoint: ZodiosEndpointDefinition, paramName: string) {
   );
 }
 
-function makeJsonSchema(schema: z.ZodTypeAny) {
-  return zodToJsonSchema(schema, {
+function makeJsonSchema(
+  schema: z.ZodTypeAny,
+  definitions?: Record<string, z.ZodTypeAny>
+) {
+  const jsonSchema = zodToJsonSchema(schema, {
     target: "openApi3",
-    $refStrategy: "none",
+    definitions,
+    definitionPath: definitions ? "components/schemas" : undefined,
+    $refStrategy: definitions ? undefined : "none",
   }) as OpenAPIV3.SchemaObject;
+
+  if ("components/schemas" in jsonSchema) {
+    delete jsonSchema["components/schemas"];
+  }
+
+  return jsonSchema;
 }
 
 /**
@@ -102,6 +113,7 @@ function makeOpenApi(options: {
   info?: OpenAPIV3.InfoObject;
   servers?: OpenAPIV3.ServerObject[];
   securitySchemes?: Record<string, OpenAPIV3.SecuritySchemeObject>;
+  definitions?: Record<string, z.ZodAny>;
   tagsFromPathFn?: (path: string) => string[];
 }) {
   const { tagsFromPathFn = tagsFromPath } = options;
@@ -113,11 +125,18 @@ function makeOpenApi(options: {
     },
     servers: options.servers,
     paths: {},
+    components: {},
   };
   if (options.securitySchemes) {
-    openApi.components = {
-      securitySchemes: options.securitySchemes,
-    };
+    openApi.components!.securitySchemes = options.securitySchemes;
+  }
+  if (options.definitions) {
+    openApi.components!.schemas = {};
+    for (let schemaName in options.definitions) {
+      openApi.components!.schemas[schemaName] = makeJsonSchema(
+        options.definitions[schemaName]
+      );
+    }
   }
   for (let api of options.apis) {
     for (let endpoint of api.definitions) {
@@ -129,7 +148,7 @@ function makeOpenApi(options: {
             "Success",
           content: {
             "application/json": {
-              schema: makeJsonSchema(endpoint.response),
+              schema: makeJsonSchema(endpoint.response, options.definitions),
             },
           },
         },
@@ -139,7 +158,7 @@ function makeOpenApi(options: {
           description: error.description ?? error.schema.description ?? "Error",
           content: {
             "application/json": {
-              schema: makeJsonSchema(error.schema),
+              schema: makeJsonSchema(error.schema, options.definitions),
             },
           },
         };
@@ -156,7 +175,7 @@ function makeOpenApi(options: {
               name: paramName,
               description: param.description ?? param.schema.description,
               in: "path",
-              schema: makeJsonSchema(param.schema),
+              schema: makeJsonSchema(param.schema, options.definitions),
               required: true,
             });
           } else {
@@ -189,7 +208,7 @@ function makeOpenApi(options: {
                 ? `${param.name}[]`
                 : param.name,
             in: param.type.toLowerCase(),
-            schema: makeJsonSchema(schema),
+            schema: makeJsonSchema(schema, options.definitions),
             description: param.description ?? schemaDesc,
             required,
           } as OpenAPIV3.ParameterObject);
@@ -212,7 +231,7 @@ function makeOpenApi(options: {
               description: body.description ?? body.schema.description,
               content: {
                 "application/json": {
-                  schema: makeJsonSchema(body.schema),
+                  schema: makeJsonSchema(body.schema, options.definitions),
                 },
               },
             }
@@ -274,6 +293,7 @@ export class OpenApiBuilder {
     info: OpenAPIV3.InfoObject;
     servers?: OpenAPIV3.ServerObject[];
     securitySchemes?: Record<string, OpenAPIV3.SecuritySchemeObject>;
+    definitions?: Record<string, z.ZodAny>;
     tagsFromPathFn?: (path: string) => string[];
   };
   constructor(info: OpenAPIV3.InfoObject) {
