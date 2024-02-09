@@ -199,6 +199,7 @@ const document = openApiBuilder({
   version: "1.0.0",
   description: "A simple user API",
 })
+  .addDefinitions({ user: userSchema, comment: commentSchema })
   .addServer({ url: "/api/v1" })
   .addSecurityScheme("admin", bearerAuthScheme())
   .addPublicApi(api)
