@@ -81,16 +81,16 @@ function makeJsonSchema(
 ) {
   const jsonSchema = zodToJsonSchema(schema, {
     target: "openApi3",
-    definitions,
+    definitions: definitions || {},
     definitionPath: definitions ? "components/schemas" : undefined,
-    $refStrategy: definitions ? undefined : "none",
   }) as OpenAPIV3.SchemaObject;
-
   if ("components/schemas" in jsonSchema) {
     delete jsonSchema["components/schemas"];
   }
-
-  return jsonSchema;
+  if ("undefined" in jsonSchema) {
+    delete jsonSchema["undefined"];
+  }
+  return Object.keys(jsonSchema).length ? jsonSchema : (undefined as any);
 }
 
 /**
@@ -113,7 +113,7 @@ function makeOpenApi(options: {
   info?: OpenAPIV3.InfoObject;
   servers?: OpenAPIV3.ServerObject[];
   securitySchemes?: Record<string, OpenAPIV3.SecuritySchemeObject>;
-  definitions?: Record<string, z.ZodAny>;
+  definitions?: Record<string, z.ZodTypeAny>;
   tagsFromPathFn?: (path: string) => string[];
 }) {
   const { tagsFromPathFn = tagsFromPath } = options;
@@ -125,12 +125,17 @@ function makeOpenApi(options: {
     },
     servers: options.servers,
     paths: {},
-    components: {},
   };
   if (options.securitySchemes) {
-    openApi.components!.securitySchemes = options.securitySchemes;
+    if (!openApi.components) {
+      openApi.components = {};
+    }
+    openApi.components.securitySchemes = options.securitySchemes;
   }
   if (options.definitions) {
+    if (!openApi.components) {
+      openApi.components = {};
+    }
     openApi.components!.schemas = {};
     for (let schemaName in options.definitions) {
       openApi.components!.schemas[schemaName] = makeJsonSchema(
@@ -293,7 +298,7 @@ export class OpenApiBuilder {
     info: OpenAPIV3.InfoObject;
     servers?: OpenAPIV3.ServerObject[];
     securitySchemes?: Record<string, OpenAPIV3.SecuritySchemeObject>;
-    definitions?: Record<string, z.ZodAny>;
+    definitions?: Record<string, z.ZodTypeAny>;
     tagsFromPathFn?: (path: string) => string[];
   };
   constructor(info: OpenAPIV3.InfoObject) {
@@ -311,6 +316,15 @@ export class OpenApiBuilder {
   ) {
     this.options.securitySchemes ??= {};
     this.options.securitySchemes[name] = securityScheme;
+    return this;
+  }
+
+  /**
+   * add schema definitions in #/components/schemas
+   * @param definitions key value zod schemas to be converted
+   */
+  addDefinitions(definitions: Record<string, z.ZodTypeAny>) {
+    this.options.definitions = definitions;
     return this;
   }
   /**

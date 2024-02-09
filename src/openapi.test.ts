@@ -236,4 +236,15 @@ describe("toOpenApi", () => {
       .build();
     expect(openApi).toMatchSnapshot();
   });
+
+  it("should convert to openapi with builder using definitions", () => {
+    const openApi = openApiBuilder({
+      title: "My API",
+      version: "1.0.0",
+    })
+      .addPublicApi(api)
+      .addDefinitions({ user })
+      .build();
+    expect(openApi).toMatchSnapshot();
+  });
 });
